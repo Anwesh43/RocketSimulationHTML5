@@ -1,3 +1,4 @@
+const w = window.innerWidth ,h = window.innerHeight
 class Vector {
     constructor(x,y) {
         this.x = x
@@ -52,5 +53,22 @@ class World {
                 bodies.splice(index,1)
             }
         })
+    }
+}
+class Renderer {
+    construcotr() {
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        this.context = canvas.getContext('2d')
+        document.body.appendChild(canvas)
+    }
+    render(drawCb) {
+        setInterval(()=>{
+            context.clearRect(0,0,w,h)
+            context.fillStyle = '#212121'
+            context.fillRect(0,0,w,h)
+            drawCb()
+        },50)
     }
 }

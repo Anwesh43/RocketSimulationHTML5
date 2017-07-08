@@ -76,6 +76,30 @@ class Renderer {
         },50)
     }
 }
+class RocketParticle extends Body {
+    constructor(position,color) {
+        super(position)
+        this.color = color
+        this.alpha = 1
+    }
+    draw(context) {
+        context.save()
+        context.globalAlpha = this.alpha
+        context.fillStyle = this.color
+        context.translate(this.position.x,this.position.y)
+        context.beginPath(this.position.x,this.position.y)
+        context.arc(0,0,w/160,0,2*Math.PI)
+        context.fill()
+        context.restore()
+    }
+    update() {
+        super.update()
+        this.alpha -= 0.1
+    }
+    stopped() {
+        this.alpha <= 0
+    }
+}
 class RocketBody extends Body{
     constructor(x,y,color) {
         super(new Vector(x,y))
@@ -86,7 +110,7 @@ class RocketBody extends Body{
         context.save()
         context.translate(this.position.x,this.position.y)
         context.beginPath()
-        context.arc(0,0,w/80,0,2*Math.PI)
+        context.arc(0,0,w/160,0,2*Math.PI)
         context.fill()
         context.restore()
     }

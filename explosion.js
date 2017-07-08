@@ -159,3 +159,10 @@ renderer.render((context)=>{
     world.draw(context)
     world.update()
 })
+window.onmousedown = (event) => {
+    const color = colors[Math.floor(Math.random()*colors.length)]
+    const rocket = new RocketBody(event.offsetX,h-w/15,color)
+    rocket.applyVelocity(new Vector(0,-1*(20+Math.floor(Math.random()*15))))
+    world.addBody(rocket)
+    console.log(`world bodies = ${world.bodies}`)
+}

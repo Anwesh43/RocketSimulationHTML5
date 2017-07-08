@@ -72,3 +72,21 @@ class Renderer {
         },50)
     }
 }
+class RocketBody extends Body{
+    constructor(x,y,color) {
+        super(x,y)
+        this.color = color
+    }
+    draw(context) {
+        context.fillStyle = this.color
+        context.save()
+        context.translate(this.x,this.y)
+        context.beginPath()
+        context.arc(0,0,w/20,0,2*Math.PI)
+        context.fill()
+        context.restore()
+    }
+    stopped() {
+        return this.vel == 0
+    }
+}

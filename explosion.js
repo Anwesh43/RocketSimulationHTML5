@@ -39,6 +39,7 @@ class World {
         this.bodies = []
     }
     addBody(body) {
+        body.applyAcceleration(new Vector(this.accx,this.accy))
         this.bodies.push(body)
     }
     draw(context) {
@@ -56,19 +57,19 @@ class World {
     }
 }
 class Renderer {
-    construcotr() {
+    construcotr(width,height) {
         const canvas = document.createElement('canvas')
-        canvas.width = w
-        canvas.height = h
+        canvas.width = width || w
+        canvas.height = height || h
         this.context = canvas.getContext('2d')
         document.body.appendChild(canvas)
     }
     render(drawCb) {
         setInterval(()=>{
-            context.clearRect(0,0,w,h)
+            context.clearRect(0,0,canvas.width,canvas.height)
             context.fillStyle = '#212121'
-            context.fillRect(0,0,w,h)
-            drawCb()
+            context.fillRect(0,0,canvas.width,canvas.height)
+            drawCb(context)
         },50)
     }
 }
@@ -90,3 +91,17 @@ class RocketBody extends Body{
         return this.vel == 0
     }
 }
+const renderer = new Renderer(w,h)
+const world = new World(0,0.01)
+const colors = ["#f44336","#e91e63","#673ab7","#9c27b0","#3f51b5"]
+for(var i=0;i<10;i++) {
+    const x = Math.random()*w
+    const color = colors[Math.floor(Math.random()*colors.length)]
+    var rocket = new RocketBody(x,h-w/15,color)
+    rocket.applyVel(new Vector(0,-1*(10+Math.floor(Math.random()*20))))
+    world.addBody(rocket)
+}
+renderer.render((context)=>{
+    world.draw(context)
+    world.update()
+})

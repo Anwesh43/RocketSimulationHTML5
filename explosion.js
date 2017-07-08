@@ -51,54 +51,57 @@ class World {
         this.bodies.forEach((body,index)=>{
             body.update()
             if(body.stopped() == true) {
-                bodies.splice(index,1)
+                this.bodies.splice(index,1)
             }
         })
     }
 }
 class Renderer {
-    construcotr(width,height) {
+    constructor(width,height) {
         const canvas = document.createElement('canvas')
         canvas.width = width || w
         canvas.height = height || h
+        this.w = canvas.width
+        this.h = canvas.height
         this.context = canvas.getContext('2d')
+        console.log(this.context)
         document.body.appendChild(canvas)
     }
     render(drawCb) {
         setInterval(()=>{
-            context.clearRect(0,0,canvas.width,canvas.height)
-            context.fillStyle = '#212121'
-            context.fillRect(0,0,canvas.width,canvas.height)
-            drawCb(context)
+            this.context.clearRect(0,0,this.w,this.h)
+            this.context.fillStyle = '#212121'
+            this.context.fillRect(0,0,this.w,this.h)
+            drawCb(this.context)
         },50)
     }
 }
 class RocketBody extends Body{
     constructor(x,y,color) {
-        super(x,y)
+        super(new Vector(x,y))
         this.color = color
     }
     draw(context) {
         context.fillStyle = this.color
         context.save()
-        context.translate(this.x,this.y)
+        context.translate(this.position.x,this.position.y)
         context.beginPath()
-        context.arc(0,0,w/20,0,2*Math.PI)
+        context.arc(0,0,w/80,0,2*Math.PI)
         context.fill()
         context.restore()
     }
     stopped() {
-        return this.vel == 0
+        return this.vel.y == 0
     }
 }
 const renderer = new Renderer(w,h)
-const world = new World(0,0.01)
+const world = new World(0,1)
 const colors = ["#f44336","#e91e63","#673ab7","#9c27b0","#3f51b5"]
 for(var i=0;i<10;i++) {
     const x = Math.random()*w
     const color = colors[Math.floor(Math.random()*colors.length)]
     var rocket = new RocketBody(x,h-w/15,color)
-    rocket.applyVel(new Vector(0,-1*(10+Math.floor(Math.random()*20))))
+    rocket.applyVelocity(new Vector(0,-1*(20+Math.floor(Math.random()*15))))
     world.addBody(rocket)
 }
 renderer.render((context)=>{

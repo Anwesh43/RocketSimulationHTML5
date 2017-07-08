@@ -12,8 +12,8 @@ class Vector {
 class Body {
     constructor(position) {
         this.position = position
-        this.vel = 0
-        this.acc = 0
+        this.vel = new Vector(0,0)
+        this.acc = new Vector(0,0)
     }
     update() {
         this.position.add(this.vel)
@@ -87,35 +87,62 @@ class RocketParticle extends Body {
         context.globalAlpha = this.alpha
         context.fillStyle = this.color
         context.translate(this.position.x,this.position.y)
-        context.beginPath(this.position.x,this.position.y)
-        context.arc(0,0,w/160,0,2*Math.PI)
+        context.beginPath()
+        context.arc(0,0,3,0,2*Math.PI)
         context.fill()
         context.restore()
     }
     update() {
         super.update()
-        this.alpha -= 0.1
+        this.alpha -= 0.04
     }
     stopped() {
-        this.alpha <= 0
+        return this.alpha < 0
     }
 }
 class RocketBody extends Body{
     constructor(x,y,color) {
         super(new Vector(x,y))
         this.color = color
+        this.particles = []
     }
     draw(context) {
-        context.fillStyle = this.color
-        context.save()
-        context.translate(this.position.x,this.position.y)
-        context.beginPath()
-        context.arc(0,0,w/160,0,2*Math.PI)
-        context.fill()
-        context.restore()
+        this.particles.forEach((particle)=>{
+            particle.draw(context)
+        })
+        if(this.particles.length == 0 && this.vel.y < 0) {
+          context.fillStyle = this.color
+          context.save()
+          context.translate(this.position.x,this.position.y)
+          context.beginPath()
+          context.arc(0,0,w/320,0,2*Math.PI)
+          context.fill()
+          context.restore()
+
+        }
+
     }
+    update() {
+        super.update()
+        if(this.vel.y == 0) {
+            const n = 10,deg = 360/n
+            for(var i=0;i<n;i++) {
+                const x = this.position.x+((w/80)*(Math.cos(i*deg*Math.PI/180))),y = this.position.y+((w/80)*(Math.sin(i*deg*Math.PI/180)))
+                const particle = (new RocketParticle(new Vector(x,y),this.color))
+                particle.applyAcceleration(this.acc)
+                this.particles.push(particle)
+            }
+        }
+        console.log(this.particles.length)
+        this.particles.forEach((particle,index)=>{
+            particle.update()
+            if(particle.stopped() == true) {
+                this.particles.splice(index,1)
+            }
+          })
+  }
     stopped() {
-        return this.vel.y == 0
+        return this.vel.y > 0 && this.particles.length == 0
     }
 }
 const renderer = new Renderer(w,h)
